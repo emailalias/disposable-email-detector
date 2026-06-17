@@ -47,6 +47,13 @@ jobs:
           node-version: '22'
           registry-url: 'https://registry.npmjs.org'
 
+      - name: Upgrade npm to latest
+        # Node 22 ships with npm 10.x; full trusted-publishing support
+        # landed in npm 11.x. The 10.x CLI has been observed to 404 on
+        # the publish PUT even when the OIDC token and trusted publisher
+        # config are correct.
+        run: npm install -g npm@latest
+
       - name: Check tag matches package.json version
         working-directory: packages/js
         run: |
