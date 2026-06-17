@@ -1,0 +1,50 @@
+# Pulls upstream disposable-domain lists every Monday and opens a PR
+# with the diff. Avoids manual list maintenance entirely — review the PR,
+# merge if it looks reasonable.
+#
+# Manual trigger also supported via the "Run workflow" button.
+
+name: Refresh disposable-domain list
+
+on:
+  schedule:
+    # Mondays at 06:00 UTC.
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Refresh list
+        run: python3 scripts/refresh-disposable-list.py
+
+      - name: Open PR if list changed
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: |
+            Refresh disposable-domains.json from upstream community lists
+          title: 'Refresh disposable-domains.json'
+          body: |
+            Automated weekly sync from the two upstream community lists
+            (see `scripts/refresh-disposable-list.py` for sources).
+
+            Review the diff and merge if it looks reasonable. The script
+            already filters out legitimate forwarding-alias providers
+            (EmailAlias.io, SimpleLogin, addy.io, DuckDuckGo, Firefox
+            Relay, Sign in with Apple), so any forwarding-alias domain
+            that appears in the upstream lists is excluded from the
+            disposable list before write.
+          branch: refresh-disposable-domains
+          delete-branch: true
+          add-paths: |
+            data/disposable-domains.json

@@ -66,7 +66,7 @@ check("user@emailalias.io")
 
 The detector combines three signals:
 
-1. **Curated disposable domain list** (~400 well-known providers — Mailinator, 10MinuteMail, GuerrillaMail, YOPmail, Temp-Mail, and the long tail of common test-account services). Lives in `data/disposable-domains.json`.
+1. **Disposable domain list** (~74,000 providers — Mailinator, 10MinuteMail, GuerrillaMail, YOPmail, Temp-Mail, and the long tail of obscure throwaway services). Lives in `data/disposable-domains.json`, synced weekly from upstream MIT-licensed community lists via `scripts/refresh-disposable-list.py` + a scheduled GitHub Action that opens a PR with the diff.
 2. **Forwarding-alias provider list** — separate file (`data/forwarding-alias-domains.json`) mapping each known provider's domains back to a human-readable provider name. Used to flip the verdict from `disposable` to `forwarding_alias` and tell the integrator who to NOT block.
 3. **Heuristics** on the local part and TLD:
    - Suspicious TLDs: `.tk`, `.ml`, `.ga`, `.cf`, `.gq`
@@ -86,10 +86,16 @@ Site owners who block both end up rejecting privacy-conscious customers in the s
 
 ## Updating the domain list
 
-Contributions welcome. To add a domain:
+The disposable list refreshes automatically every Monday via a GitHub Action that runs `scripts/refresh-disposable-list.py` and opens a PR with the diff. Merge if the changes look reasonable. To trigger a refresh manually:
 
-1. Open a PR adding the domain (lowercased, no leading `@`) to either `data/disposable-domains.json` or `data/forwarding-alias-domains.json`.
-2. Include the source — a screenshot of the provider's homepage, a link to where you saw it referenced, or a sample address.
+```bash
+python3 scripts/refresh-disposable-list.py
+```
+
+Contributions to the **forwarding-alias** list are welcome — that one is hand-curated:
+
+1. Open a PR adding the domain (lowercased, no leading `@`) to `data/forwarding-alias-domains.json` under the correct provider key.
+2. Include the source — a link to the provider's docs page that lists the domain, or a sample address.
 3. Run tests:
    ```bash
    # JS
@@ -98,7 +104,7 @@ Contributions welcome. To add a domain:
    cd packages/python && PYTHONPATH=src python3 -m pytest tests/
    ```
 
-For the disposable list specifically, we periodically merge from larger upstream lists (Castle, IntegerAlex/disposable-email-detector, Fidro). Pull requests batching multiple upstream merges in one go are appreciated.
+If a forwarding-alias domain ever appears on an upstream disposable list (it has happened with `addy.io`), the refresh script filters it out automatically before writing the disposable JSON — so adding it to the forwarding-alias list is enough.
 
 ## License
 
