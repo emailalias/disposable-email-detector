@@ -33,12 +33,18 @@ on:
 jobs:
   npm:
     runs-on: ubuntu-latest
+    permissions:
+      # Required for npm trusted publishing — Actions issues a
+      # short-lived OIDC token that npm exchanges for a publish
+      # session. No NPM_TOKEN secret needed.
+      id-token: write
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           registry-url: 'https://registry.npmjs.org'
 
       - name: Check tag matches package.json version
@@ -55,13 +61,13 @@ jobs:
         working-directory: packages/js
         run: node --test test/
 
-      - name: Publish to npm
+      - name: Publish to npm (trusted publishing via OIDC)
         working-directory: packages/js
         # prepublishOnly hook copies ../../data/ into ./data/ before
         # publish, so the tarball includes the JSON lists.
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        # --provenance attests the build via the same OIDC token,
+        # adding a 'Sigstore verified' badge to the npm package page.
+        run: npm publish --access public --provenance
 
   pypi:
     runs-on: ubuntu-latest
