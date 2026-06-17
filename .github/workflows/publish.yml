@@ -72,17 +72,6 @@ jobs:
         # both Node 20 and Node 22+.
         run: npm test
 
-      - name: Debug OIDC token claims
-        # Temporary: prints the sub/repository/workflow/ref claims the
-        # GitHub Actions OIDC token carries, so we can compare against
-        # the npm trusted publisher config. Remove once OIDC publish
-        # is stable.
-        run: |
-          OIDC=$(curl -sLS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=npm:registry.npmjs.org")
-          echo "Decoded payload:"
-          echo "$OIDC" | cut -d. -f2 | base64 -d 2>/dev/null | python3 -m json.tool || echo "$OIDC" | cut -d. -f2 | base64 -d
-
       - name: Publish to npm (trusted publishing via OIDC)
         working-directory: packages/js
         # prepublishOnly hook copies ../../data/ into ./data/ before
