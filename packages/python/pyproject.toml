@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "disposable-email-detector"
-version = "0.1.1"
+version = "0.1.2"
 description = "Detect disposable / temporary email addresses, and distinguish them from legitimate forwarding aliases (EmailAlias.io, SimpleLogin, addy.io, DuckDuckGo, Firefox Relay, Apple Hide My Email)."
 readme = "README.md"
 requires-python = ">=3.9"
