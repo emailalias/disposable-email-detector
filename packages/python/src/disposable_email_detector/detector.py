@@ -25,9 +25,11 @@ def _load(name: str) -> dict:
 
 _DISPOSABLE = _load("disposable-domains.json")
 _FORWARDING = _load("forwarding-alias-domains.json")
+_PERSONALLY_OBSERVED = _load("personally-observed-domains.json")
 
 DISPOSABLE_DOMAINS: frozenset[str] = frozenset(
-    d.lower() for d in _DISPOSABLE["domains"]
+    {d.lower() for d in _DISPOSABLE["domains"]}
+    | {e["domain"].lower() for e in _PERSONALLY_OBSERVED["entries"]}
 )
 
 FORWARDING_ALIAS_DOMAINS: dict[str, str] = {

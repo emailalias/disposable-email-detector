@@ -31,3 +31,4 @@ include = ["src/disposable_email_detector/data/**/*.json"]
 [tool.hatch.build.targets.wheel.force-include]
 "../../data/disposable-domains.json" = "disposable_email_detector/data/disposable-domains.json"
 "../../data/forwarding-alias-domains.json" = "disposable_email_detector/data/forwarding-alias-domains.json"
+"../../data/personally-observed-domains.json" = "disposable_email_detector/data/personally-observed-domains.json"

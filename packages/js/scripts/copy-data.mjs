@@ -17,7 +17,11 @@ const dest = join(here, "..", "data");
 if (existsSync(dest)) rmSync(dest, { recursive: true });
 mkdirSync(dest, { recursive: true });
 
-const files = ["disposable-domains.json", "forwarding-alias-domains.json"];
+const files = [
+  "disposable-domains.json",
+  "forwarding-alias-domains.json",
+  "personally-observed-domains.json",
+];
 for (const f of files) {
   copyFileSync(join(repoRootData, f), join(dest, f));
   console.log(`copied ${f}`);

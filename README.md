@@ -67,8 +67,9 @@ check("user@emailalias.io")
 The detector combines three signals:
 
 1. **Disposable domain list** (~74,000 providers — Mailinator, 10MinuteMail, GuerrillaMail, YOPmail, Temp-Mail, and the long tail of obscure throwaway services). Lives in `data/disposable-domains.json`, synced weekly from upstream MIT-licensed community lists via `scripts/refresh-disposable-list.py` + a scheduled GitHub Action that opens a PR with the diff.
-2. **Forwarding-alias provider list** — separate file (`data/forwarding-alias-domains.json`) mapping each known provider's domains back to a human-readable provider name. Used to flip the verdict from `disposable` to `forwarding_alias` and tell the integrator who to NOT block.
-3. **Heuristics** on the local part and TLD:
+2. **Personally-observed list** (`data/personally-observed-domains.json`) — domains seen directly in EmailAlias.io abuse logs. Each carder-wave entry carries a `note` field with context (mail-only NameSilo domain, Cloudflare forwarding MX, name impersonating a real institution, etc.). This file is never touched by the upstream refresh — it survives every weekly sync.
+3. **Forwarding-alias provider list** — separate file (`data/forwarding-alias-domains.json`) mapping each known provider's domains back to a human-readable provider name. Used to flip the verdict from `disposable` to `forwarding_alias` and tell the integrator who to NOT block.
+4. **Heuristics** on the local part and TLD:
    - Suspicious TLDs: `.tk`, `.ml`, `.ga`, `.cf`, `.gq`
    - Local part looks randomly generated (e.g. `xkj0298473`, or runs of 8+ consonants)
    - Local part starts with a throwaway keyword (`temp`, `throw`, `trash`, `spam`, `junk`, `burner`, `test`, `fake`)

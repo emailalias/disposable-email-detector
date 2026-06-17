@@ -32,10 +32,12 @@ function loadJson(name) {
 
 const disposableJson = loadJson("disposable-domains.json");
 const forwardingJson = loadJson("forwarding-alias-domains.json");
+const personallyObservedJson = loadJson("personally-observed-domains.json");
 
-export const DISPOSABLE_DOMAINS = new Set(
-  disposableJson.domains.map((d) => d.toLowerCase())
-);
+export const DISPOSABLE_DOMAINS = new Set([
+  ...disposableJson.domains.map((d) => d.toLowerCase()),
+  ...personallyObservedJson.entries.map((e) => e.domain.toLowerCase()),
+]);
 
 export const FORWARDING_ALIAS_DOMAINS = new Map();
 for (const [provider, domains] of Object.entries(forwardingJson.providers)) {
