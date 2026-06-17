@@ -1,5 +1,11 @@
 # disposable-email-detector
 
+[![PyPI version](https://img.shields.io/pypi/v/disposable-email-detector?label=PyPI&logo=pypi&logoColor=white)](https://pypi.org/project/disposable-email-detector/)
+[![PyPI downloads](https://img.shields.io/pypi/dm/disposable-email-detector?label=downloads)](https://pypi.org/project/disposable-email-detector/)
+[![Python versions](https://img.shields.io/pypi/pyversions/disposable-email-detector?label=python)](https://pypi.org/project/disposable-email-detector/)
+[![npm sibling](https://img.shields.io/npm/v/@emailalias/disposable-email-detector?label=JS%20package&logo=npm)](https://www.npmjs.com/package/@emailalias/disposable-email-detector)
+[![License](https://img.shields.io/pypi/l/disposable-email-detector?label=license)](https://github.com/emailalias/disposable-email-detector/blob/main/LICENSE)
+
 Detect disposable / temporary email addresses, and tell them apart from legitimate forwarding aliases like EmailAlias.io, SimpleLogin, addy.io, DuckDuckGo Email Protection, Firefox Relay, and Sign in with Apple's Hide My Email.
 
 Most disposable-email blocklists treat every "unusual" email domain the same. This one separates two distinct categories:
