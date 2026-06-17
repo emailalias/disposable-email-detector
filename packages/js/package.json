@@ -26,7 +26,7 @@
     "type": "git",
     "url": "git+https://github.com/emailalias/disposable-email-detector.git"
   },
-  "homepage": "https://emailalias.io/disposable-email-checker",
+  "homepage": "https://emailalias.io/tools/disposable-email-checker",
   "bugs": {
     "url": "https://github.com/emailalias/disposable-email-detector/issues"
   },

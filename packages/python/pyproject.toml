@@ -20,7 +20,7 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://emailalias.io/disposable-email-checker"
+Homepage = "https://emailalias.io/tools/disposable-email-checker"
 Repository = "https://github.com/emailalias/disposable-email-detector"
 Issues = "https://github.com/emailalias/disposable-email-detector/issues"
 

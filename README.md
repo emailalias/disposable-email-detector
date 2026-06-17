@@ -10,7 +10,7 @@ Most disposable-email blocklists treat every "unusual" email domain the same. Th
 | **Forwarding alias** — permanent address, forwards to a real inbox the user controls | `user@emailalias.io`, `u@sl.email`, `foo@duck.com` | **Do NOT block** — this is a real customer using privacy tooling |
 | **OK** — unknown / probably legit mailbox | `jane@gmail.com` | Allow |
 
-Try the hosted checker at [emailalias.io/disposable-email-checker](https://emailalias.io/disposable-email-checker), or wire one of the language packages below into your signup form.
+Try the hosted checker at [emailalias.io/tools/disposable-email-checker](https://emailalias.io/tools/disposable-email-checker), or wire one of the language packages below into your signup form.
 
 ## JavaScript / TypeScript
 
