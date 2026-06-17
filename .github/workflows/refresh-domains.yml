@@ -25,10 +25,35 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Record current list size (pre-refresh)
+        id: pre
+        run: |
+          count=$(python3 -c "import json; print(len(json.load(open('data/disposable-domains.json'))['domains']))")
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+          echo "Pre-refresh size: $count"
+
       - name: Refresh list
         run: python3 scripts/refresh-disposable-list.py
 
+      - name: Sanity-check new list size
+        id: sanity
+        # Guardrail: if upstream sources go haywire and the list shrinks
+        # by more than 5%, do NOT auto-merge. Opens the PR for manual
+        # review instead so we can decide whether to revert upstream
+        # changes or accept the smaller list.
+        run: |
+          before=${{ steps.pre.outputs.count }}
+          after=$(python3 -c "import json; print(len(json.load(open('data/disposable-domains.json'))['domains']))")
+          echo "Post-refresh size: $after (before: $before)"
+          if [ "$after" -lt "$((before * 95 / 100))" ]; then
+            echo "List shrunk by more than 5% ($before → $after). Will NOT auto-merge."
+            echo "auto_merge=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "auto_merge=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Open PR if list changed
+        id: cpr
         uses: peter-evans/create-pull-request@v6
         with:
           commit-message: |
@@ -38,13 +63,32 @@ jobs:
             Automated weekly sync from the two upstream community lists
             (see `scripts/refresh-disposable-list.py` for sources).
 
-            Review the diff and merge if it looks reasonable. The script
-            already filters out legitimate forwarding-alias providers
-            (EmailAlias.io, SimpleLogin, addy.io, DuckDuckGo, Firefox
-            Relay, Sign in with Apple), so any forwarding-alias domain
-            that appears in the upstream lists is excluded from the
-            disposable list before write.
+            Pre-refresh size: ${{ steps.pre.outputs.count }}
+            Auto-merge enabled: ${{ steps.sanity.outputs.auto_merge }}
+
+            The script already filters out legitimate forwarding-alias
+            providers (EmailAlias.io, SimpleLogin, addy.io, DuckDuckGo,
+            Firefox Relay, Sign in with Apple), so any forwarding-alias
+            domain that appears in the upstream lists is excluded from
+            the disposable list before write.
+
+            If auto-merge was disabled, the list shrunk by more than 5%
+            on this refresh — review the diff before merging.
           branch: refresh-disposable-domains
           delete-branch: true
           add-paths: |
             data/disposable-domains.json
+
+      - name: Enable auto-merge on the PR
+        # Only auto-merge if a PR was opened AND the sanity check passed.
+        # cpr.outputs.pull-request-operation is 'created' or 'updated'
+        # when a PR exists; '' when there were no changes to commit.
+        if: steps.cpr.outputs.pull-request-number && steps.sanity.outputs.auto_merge == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr merge ${{ steps.cpr.outputs.pull-request-number }} \
+            --squash \
+            --auto \
+            --delete-branch \
+            --repo ${{ github.repository }}
