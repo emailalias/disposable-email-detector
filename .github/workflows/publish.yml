@@ -92,9 +92,20 @@ jobs:
         working-directory: packages/python
         run: PYTHONPATH=src python -m pytest tests/
 
-      - name: Build wheel + sdist
+      - name: Copy shared data files into the package source
+        # Mirrors repo-root data/ into src/disposable_email_detector/data/
+        # so hatchling picks them up during the wheel build. The package
+        # source dir is gitignored for these files; copy-data.py runs at
+        # build time to guarantee the wheel always carries fresh data.
         working-directory: packages/python
-        run: python -m build
+        run: python scripts/copy-data.py
+
+      - name: Build wheel
+        # Pure-Python wheel only (no sdist). The sdist build path runs
+        # in an isolated /tmp dir and can't see ../../data/, so we skip
+        # it. PyPI accepts wheel-only releases for pure-Python packages.
+        working-directory: packages/python
+        run: python -m build --wheel
 
       - name: Publish to PyPI (trusted publishing)
         uses: pypa/gh-action-pypi-publish@release/v1

@@ -1,0 +1,9 @@
+# scripts/copy-data.py copies data/ in from the repo root before
+# `python -m build`. We don't commit the copy.
+src/disposable_email_detector/data/
+dist/
+build/
+*.egg-info/
+__pycache__/
+*.pyc
+.pytest_cache/

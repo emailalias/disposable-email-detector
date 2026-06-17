@@ -26,9 +26,19 @@ Issues = "https://github.com/emailalias/disposable-email-detector/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/disposable_email_detector"]
-include = ["src/disposable_email_detector/data/**/*.json"]
 
+# Data files live at the repo root under data/; before each build,
+# scripts/copy-data.py mirrors them into src/disposable_email_detector/data/
+# so hatchling picks them up here. CI runs the copy step before
+# `python -m build`; if you build locally, run it yourself first:
+#   python scripts/copy-data.py && python -m build
 [tool.hatch.build.targets.wheel.force-include]
-"../../data/disposable-domains.json" = "disposable_email_detector/data/disposable-domains.json"
-"../../data/forwarding-alias-domains.json" = "disposable_email_detector/data/forwarding-alias-domains.json"
-"../../data/personally-observed-domains.json" = "disposable_email_detector/data/personally-observed-domains.json"
+"src/disposable_email_detector/data" = "disposable_email_detector/data"
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "src/",
+  "tests/",
+  "scripts/",
+  "README.md",
+]
