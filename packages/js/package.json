@@ -1,0 +1,38 @@
+{
+  "name": "@emailalias/disposable-email-detector",
+  "version": "0.1.0",
+  "description": "Detect disposable / temporary email addresses, and distinguish them from legitimate forwarding aliases (EmailAlias.io, SimpleLogin, addy.io, DuckDuckGo, Firefox Relay, Apple Hide My Email).",
+  "license": "MIT",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./domains": "./src/domains.js"
+  },
+  "files": [
+    "src/",
+    "README.md"
+  ],
+  "keywords": [
+    "disposable-email",
+    "temporary-email",
+    "email-validation",
+    "email-alias",
+    "anti-fraud",
+    "signup-validation"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emailalias/disposable-email-detector.git"
+  },
+  "homepage": "https://emailalias.io/disposable-email-checker",
+  "bugs": {
+    "url": "https://github.com/emailalias/disposable-email-detector/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test test/"
+  }
+}

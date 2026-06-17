@@ -1,0 +1,39 @@
+{
+  "_meta": {
+    "description": "Legitimate forwarding-alias provider domains. An address at one of these is NOT disposable — it forwards to a real, permanent inbox the user controls. Site owners blocking disposable signups should NOT block these. Note: domains like icloud.com, proton.me, protonmail.com, pm.me are NOT listed because they are primarily personal mailboxes, not alias providers; we cannot reliably tell from the domain alone whether a given address on those is a Hide-My-Email alias or a primary inbox.",
+    "license": "MIT — same as the parent repo",
+    "version": "0.1.0"
+  },
+  "providers": {
+    "EmailAlias.io": [
+      "emailalias.io"
+    ],
+    "SimpleLogin (Proton)": [
+      "simplelogin.com",
+      "simplelogin.co",
+      "simplelogin.fr",
+      "simplelogin.io",
+      "sl.email",
+      "silomails.com",
+      "8alias.com",
+      "passmail.com",
+      "passmail.net",
+      "passinbox.com"
+    ],
+    "addy.io (AnonAddy)": [
+      "addy.io",
+      "anonaddy.com",
+      "anonaddy.me",
+      "mailshield.app"
+    ],
+    "DuckDuckGo Email Protection": [
+      "duck.com"
+    ],
+    "Firefox Relay (Mozilla)": [
+      "mozmail.com"
+    ],
+    "Sign in with Apple (Hide My Email relay)": [
+      "privaterelay.appleid.com"
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "disposable-email-detector"
+version = "0.1.0"
+description = "Detect disposable / temporary email addresses, and distinguish them from legitimate forwarding aliases (EmailAlias.io, SimpleLogin, addy.io, DuckDuckGo, Firefox Relay, Apple Hide My Email)."
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+keywords = ["disposable-email", "temporary-email", "email-validation", "email-alias", "anti-fraud"]
+authors = [{ name = "EmailAlias.io", email = "hello@emailalias.io" }]
+classifiers = [
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Communications :: Email",
+  "Topic :: Internet :: WWW/HTTP",
+]
+
+[project.urls]
+Homepage = "https://emailalias.io/disposable-email-checker"
+Repository = "https://github.com/emailalias/disposable-email-detector"
+Issues = "https://github.com/emailalias/disposable-email-detector/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/disposable_email_detector"]
+include = ["src/disposable_email_detector/data/**/*.json"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"../../data/disposable-domains.json" = "disposable_email_detector/data/disposable-domains.json"
+"../../data/forwarding-alias-domains.json" = "disposable_email_detector/data/forwarding-alias-domains.json"
