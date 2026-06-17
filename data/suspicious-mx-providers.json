@@ -1,0 +1,29 @@
+{
+  "_meta": {
+    "description": "MX hostname patterns for forwarding-only mail providers commonly used by both legitimate small-domain owners AND carders setting up catch-all signup farms. A match is a SOFT SIGNAL — surface it to the integrator and let them decide. Do NOT auto-block on MX alone; combine with the 'no website' signal (HTTP HEAD on https://<domain>) for stronger confidence.",
+    "license": "MIT — same as the parent repo",
+    "version": "0.1.0",
+    "policy": "Hand-curated from EmailAlias.io's observed carder patterns. Pattern is matched as a SUFFIX against each MX exchange hostname (case-insensitive). Only add a provider here if it is genuinely used as a catch-all forwarding service AND we have seen it in actual abuse logs."
+  },
+  "providers": {
+    "NameSilo Free Email Forwarding": [
+      ".namesilo.com"
+    ],
+    "Cloudflare Email Routing": [
+      "route1.mx.cloudflare.net",
+      "route2.mx.cloudflare.net",
+      "route3.mx.cloudflare.net"
+    ],
+    "ImprovMX": [
+      ".improvmx.com"
+    ],
+    "Forward Email": [
+      ".forwardemail.net"
+    ],
+    "Gravity Engine Email Forwarder": [
+      ".gravityengine.cc",
+      ".gravityengine.io",
+      ".gravityengine.com"
+    ]
+  }
+}
