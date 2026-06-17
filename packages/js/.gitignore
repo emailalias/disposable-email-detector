@@ -1,0 +1,5 @@
+# prepublishOnly copies data/ in from the repo root before npm publish.
+# We don't want that copy committed.
+data/
+node_modules/
+*.tgz

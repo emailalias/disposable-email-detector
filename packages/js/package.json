@@ -11,6 +11,7 @@
   },
   "files": [
     "src/",
+    "data/",
     "README.md"
   ],
   "keywords": [
@@ -33,6 +34,7 @@
     "node": ">=18"
   },
   "scripts": {
-    "test": "node --test test/"
+    "test": "node --test test/",
+    "prepublishOnly": "node scripts/copy-data.mjs"
   }
 }

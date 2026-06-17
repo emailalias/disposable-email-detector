@@ -1,0 +1,102 @@
+# Publishes both the npm and PyPI packages on tag push.
+#
+# Trigger:
+#   git tag v0.1.0 && git push --tags
+#
+# Required GitHub repo settings before the first release:
+#   1. npm: add NPM_TOKEN as a repo secret (Settings → Secrets → Actions).
+#      Generate it on npmjs.com → Access Tokens → Granular (publish-only,
+#      scoped to the @emailalias org).
+#
+#   2. PyPI: configure trusted publishing — no token required. On
+#      pypi.org go to Manage → Publishing → Add a new pending publisher
+#      with:
+#        owner:          emailalias
+#        repo:           disposable-email-detector
+#        workflow name:  publish.yml
+#        environment:    pypi
+#      Then create a `pypi` GitHub environment under repo Settings →
+#      Environments. The id-token write permission below is what lets
+#      OIDC issue a short-lived PyPI token at runtime.
+#
+# Each job pins to the tag's commit, runs tests, and aborts the publish
+# if the package version in package.json / pyproject.toml doesn't match
+# the git tag (so v0.2.0 can't ship 0.1.0 by accident).
+
+name: Publish packages
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  npm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Check tag matches package.json version
+        working-directory: packages/js
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          pkg=$(node -p "require('./package.json').version")
+          if [ "$tag" != "$pkg" ]; then
+            echo "Tag v$tag does not match package.json version $pkg" >&2
+            exit 1
+          fi
+
+      - name: Run tests
+        working-directory: packages/js
+        run: node --test test/
+
+      - name: Publish to npm
+        working-directory: packages/js
+        # prepublishOnly hook copies ../../data/ into ./data/ before
+        # publish, so the tarball includes the JSON lists.
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  pypi:
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Check tag matches pyproject.toml version
+        working-directory: packages/python
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          pkg=$(python -c "import tomllib; print(tomllib.loads(open('pyproject.toml','rb').read().decode())['project']['version'])")
+          if [ "$tag" != "$pkg" ]; then
+            echo "Tag v$tag does not match pyproject.toml version $pkg" >&2
+            exit 1
+          fi
+
+      - name: Install build tools
+        run: pip install --upgrade build pytest
+
+      - name: Run tests
+        working-directory: packages/python
+        run: PYTHONPATH=src python -m pytest tests/
+
+      - name: Build wheel + sdist
+        working-directory: packages/python
+        run: python -m build
+
+      - name: Publish to PyPI (trusted publishing)
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: packages/python/dist/
