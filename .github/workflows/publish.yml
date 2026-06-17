@@ -59,7 +59,11 @@ jobs:
 
       - name: Run tests
         working-directory: packages/js
-        run: node --test test/
+        # Node 22 changed --test arg resolution: a bare 'test/' is now
+        # treated as a module specifier instead of a directory glob.
+        # Pass an explicit pattern so the runner discovers tests on
+        # both Node 20 and Node 22+.
+        run: npm test
 
       - name: Publish to npm (trusted publishing via OIDC)
         working-directory: packages/js
