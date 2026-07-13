@@ -79,16 +79,27 @@ jobs:
           add-paths: |
             data/disposable-domains.json
 
-      - name: Enable auto-merge on the PR
-        # Only auto-merge if a PR was opened AND the sanity check passed.
-        # cpr.outputs.pull-request-operation is 'created' or 'updated'
-        # when a PR exists; '' when there were no changes to commit.
+      - name: Merge the PR
+        # Only merge if a PR was opened AND the sanity check passed.
+        # cpr.outputs.pull-request-number is set when a PR exists;
+        # empty when there were no changes to commit.
+        #
+        # We merge directly rather than with `gh pr merge --auto`: `--auto`
+        # only works when there's a required status check or review to wait
+        # on (via branch protection). This repo's `main` has no required
+        # checks, so the PR is immediately mergeable ("clean status") and
+        # `--auto` errors out — which used to red-fail the whole run even
+        # though the PR was created fine. A direct squash-merge is what we
+        # actually want, since the >5% shrink guard already ran in this job.
         if: steps.cpr.outputs.pull-request-number && steps.sanity.outputs.auto_merge == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh pr merge ${{ steps.cpr.outputs.pull-request-number }} \
-            --squash \
-            --auto \
-            --delete-branch \
-            --repo ${{ github.repository }}
+          pr="${{ steps.cpr.outputs.pull-request-number }}"
+          # Direct merge for the common case (PR is mergeable now). Fall back
+          # to --auto if branch protection with required checks is ever added.
+          # Never fail the run on a merge hiccup — the PR is the real output,
+          # and leaving it open for manual merge is an acceptable worst case.
+          gh pr merge "$pr" --squash --delete-branch --repo "${{ github.repository }}" \
+            || gh pr merge "$pr" --squash --auto --delete-branch --repo "${{ github.repository }}" \
+            || echo "::warning::Could not merge PR #$pr automatically — left open for manual merge."
